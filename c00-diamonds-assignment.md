@@ -89,6 +89,22 @@ below. Document your observations from the visual.
 ``` r
 ## TASK: Plot `price` vs `carat` below
 ## Your code here!
+library(cowplot)
+```
+
+    ## 
+    ## ********************************************************
+
+    ## Note: As of version 1.0.0, cowplot does not change the
+
+    ##   default ggplot2 theme anymore. To recover the previous
+
+    ##   behavior, execute:
+    ##   theme_set(theme_cowplot())
+
+    ## ********************************************************
+
+``` r
 glimpse(diamonds)
 ```
 
@@ -112,9 +128,44 @@ ggplot(diamonds)+
 
 ![](c00-diamonds-assignment_files/figure-gfm/q1-task-1.png)<!-- -->
 
+``` r
+mod_diamond_carat1 = diamonds[diamonds$carat <= 1.5 & diamonds$carat >= 1.0, ] 
+carat1 <- mod_diamond_carat1 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat2 = diamonds[diamonds$carat <= 2.0 & diamonds$carat >= 1.5, ] 
+carat2 <- mod_diamond_carat2 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat3 = diamonds[diamonds$carat <= 2.5 & diamonds$carat >= 2.0, ] 
+carat3 <- mod_diamond_carat3 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat4 = diamonds[diamonds$carat <= 3.0 & diamonds$carat >= 2.5, ] 
+carat4 <- mod_diamond_carat4 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+plot_grid(carat1, carat2, carat3, carat4, labels = "AUTO")
+```
+
+![](c00-diamonds-assignment_files/figure-gfm/q1-task-2.png)<!-- -->
+
 **Observations**:
 
-  - (Write your observations here\!)
+After Angela made a note on how carats are measured, I was interested in
+exploring the hard lines in the first graph, which seemed anomalous,
+especially when considering the logarithmic evidenced by the sub \<1
+carat range. I broke down the set based on carat ranges (1-1.5, 1.5-2,
+2-2.5, 2.5-3) and then made a histogram plot from those ranges which
+seems to highlight this phenomena on the data. You can see this effect
+even in the most basic carat v. price graph. I think it is a fair
+statement to make that the distribution of carats should be purely
+random, but within the specified ranges there is a clear bias towards
+“clean” numbers, with a logarithmic decay within each of those sets.
 
 **q2** Create a visualization showing variables `carat`, `price`, and
 `cut` simultaneously. Experiment with which variable you assign to which
@@ -124,21 +175,7 @@ aesthetic (`x`, `y`, etc.) to find an effective visual.
 ## TASK: Plot `price`, `carat`, and `cut` below
 ## Your code here!
 library(cowplot)
-```
 
-    ## 
-    ## ********************************************************
-
-    ## Note: As of version 1.0.0, cowplot does not change the
-
-    ##   default ggplot2 theme anymore. To recover the previous
-
-    ##   behavior, execute:
-    ##   theme_set(theme_cowplot())
-
-    ## ********************************************************
-
-``` r
 mod_diamond_carat1 = diamonds[diamonds$carat <= 1.5 & diamonds$carat >= 1.0, ] 
 cpc1 <- ggplot(mod_diamond_carat1)+
   geom_point(aes(x=carat, y=price, color=cut))
@@ -183,14 +220,16 @@ mod_diamond_carat5 %>%
 ![](c00-diamonds-assignment_files/figure-gfm/q2-task-2.png)<!-- -->
 
 ``` r
-plot_grid(carat1, carat2, carat3, carat4, labels = "AUTO")
+#plot_grid(carat1, carat2, carat3, carat4, labels = "AUTO")
 ```
-
-![](c00-diamonds-assignment_files/figure-gfm/q2-task-3.png)<!-- -->
 
 **Observations**:
 
-  - (Write your observations here\!)
+As I was slicing and dicing the data I noticed something interesting at
+2.8+ carats. There are very few ideal cuts in this range which is
+actually somewhat counter-intuitive. My hypothesis from this is that at
+this range the primary purpose is to maximize weight (carats) so
+therefore reducing the weight to improve the cut is not preferred
 
 # Communication
 
