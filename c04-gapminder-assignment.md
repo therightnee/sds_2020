@@ -245,7 +245,7 @@ gapminder %>%
                 outlier.size=1, notch=FALSE) +
   geom_jitter(shape=4, size=1) +
   scale_x_log10() +
-  labs(title = "Continent vs. Continent - Max/Min Comparison",
+  labs(title = "Continent vs. GDP - Max/Min Comparison",
        x="GDP",
        y="Continent") +
   facet_grid(~ year)
