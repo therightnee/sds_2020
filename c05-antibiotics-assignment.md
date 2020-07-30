@@ -68,20 +68,21 @@ for more information.
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
     ## ✓ tibble  3.0.3     ✓ dplyr   1.0.0
     ## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
     ## ✓ readr   1.3.1     ✓ forcats 0.5.0
 
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
 library(ggrepel)
 library(stringr)
+library(wesanderson)
 ```
 
 *Background*: The data\[1\] we study in this challenge report the
@@ -167,10 +168,11 @@ effectiveness?
 ## TASK: Create your visualization
 df_antibiotics %>% 
   filter(penicillin <= 0.1) %>%
-  ggplot(aes(x = bacteria, y = penicillin)) +
+  ggplot(aes(x = bacteria, y = penicillin, color = gram)) +
   geom_point(size = 3) +
   geom_text(aes(label=penicillin), nudge_y = 0.002) +
-  scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10))
+  scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10)) + 
+  scale_color_manual(values=c("#999999", "#E69F00"))
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1-task-1.png)<!-- -->
@@ -178,10 +180,11 @@ df_antibiotics %>%
 ``` r
 df_antibiotics %>% 
   filter(streptomycin <= 0.1) %>%
-  ggplot(aes(x = bacteria, y = streptomycin)) +
+  ggplot(aes(x = bacteria, y = streptomycin, color = gram)) +
   geom_point(size = 3) +
   geom_text(aes(label=streptomycin), nudge_y = 0.005) +
-  scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10))
+  scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10)) + 
+  scale_color_manual(values=c("#999999", "#E69F00"))
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1-task-2.png)<!-- -->
@@ -189,10 +192,11 @@ df_antibiotics %>%
 ``` r
 df_antibiotics %>% 
   filter(neomycin < 0.1) %>%
-  ggplot(aes(x = bacteria, y = neomycin)) +
+  ggplot(aes(x = bacteria, y = neomycin, color = gram)) +
   geom_point(size = 3) + 
   geom_text(aes(label=neomycin), nudge_y = 0.005) +
-  scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10))
+  scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10)) + 
+  scale_color_manual(values=c("#999999", "#E69F00"))
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1-task-3.png)<!-- -->
