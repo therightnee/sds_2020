@@ -172,7 +172,7 @@ df_antibiotics %>%
   geom_point(size = 3) +
   geom_text(aes(label=penicillin), nudge_y = 0.002) +
   scale_x_discrete(labels = function(bacteria) str_wrap(bacteria, width = 10)) + 
-  scale_color_manual(values=c("#999999", "#E69F00"))
+  scale_color_manual(values=c("#E69F00"))
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1-task-1.png)<!-- -->
@@ -201,14 +201,13 @@ df_antibiotics %>%
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1-task-3.png)<!-- -->
 
-``` r
-###list the count for ineffective responses###
-```
-
 **Observations**:
 
-  - Record your observations here
-  - Can you make any broad statements about antibiotic effectiveness?
+Generally antibiotics are not that effective under 0.1 MIC, and
+interestingly they are more effective against gram positive bacterium
+than gram negative. As my team mate Ingrid points out this is likely due
+to the evolutions that gram negative bacterium have adopted to better
+respond to antibiotics.
 
 ## Purpose: Categorize Bacteria
 
@@ -294,9 +293,22 @@ df_genus %>%
     ## 2 Staphylococcus albus          0.007         0.1     0.001 positive
     ## 3 Staphylococcus aureus         0.03          0.03    0.001 positive
 
+``` r
+df_effective <- df_antibiotics %>%
+  filter(neomycin <= 0.1 & penicillin <= 0.1 & streptomycin <= 0.1)
+
+
+df_effective %>%
+  pivot_longer(c(penicillin, streptomycin, neomycin), names_to = "Antibiotic", values_to = "MIC") %>%
+  ggplot(aes(x = bacteria, y = MIC, color = Antibiotic)) +
+  geom_point(size = 3)
+```
+
+![](c05-antibiotics-assignment_files/figure-gfm/q2-task-1.png)<!-- -->
+
 **Observations**:
 
-  - Document your observations here\!
+Few antibiotics have MIC \<0.1 for multiple bacterium.
 
 # References
 

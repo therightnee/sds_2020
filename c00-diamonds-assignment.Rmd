@@ -1,0 +1,180 @@
+---
+title: "Getting Started: Diamonds"
+author: "(Your name here)"
+date: 2020-
+output:
+  github_document:
+    toc: true
+---
+
+*Purpose*: Throughout this course, you'll complete a large number of *exercises* and *challenges*. Exercises are meant to introduce content with easy-to-solve problems, while challenges are meant to make you think more deeply about and apply the content. The challenges will start out highly-scaffolded, and become progressively open-ended.
+
+In this challenge, you will go through the process of exploring, documenting, and sharing an analysis of a dataset. We will use these skills again and again in each challenge.
+
+<!-- include-rubric -->
+# Grading Rubric
+<!-- -------------------------------------------------- -->
+
+Unlike exercises, **challenges will be graded**. The following rubrics define how you will be graded, both on an individual and team basis.
+
+## Individual
+<!-- ------------------------- -->
+
+| Category | Unsatisfactory | Satisfactory |
+|----------|----------------|--------------|
+| Effort | Some task __q__'s left unattempted | All task __q__'s attempted |
+| Observed | Did not document observations | Documented observations based on analysis |
+| Supported | Some observations not supported by analysis | All observations supported by analysis (table, graph, etc.) |
+| Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability | Code sufficiently close to the [style guide](https://style.tidyverse.org/) |
+
+## Team
+<!-- ------------------------- -->
+
+| Category | Unsatisfactory | Satisfactory |
+|----------|----------------|--------------|
+| Documented | No team contributions to Wiki | Team contributed to Wiki |
+| Referenced | No team references in Wiki | At least one reference in Wiki to member report(s) |
+| Relevant | References unrelated to assertion, or difficult to find related analysis based on reference text | Reference text clearly points to relevant analysis |
+
+## Due Date
+<!-- ------------------------- -->
+
+All the deliverables stated in the rubrics above are due on the day of the class discussion of that exercise. See the [Syllabus](https://docs.google.com/document/d/1jJTh2DH8nVJd2eyMMoyNGroReo0BKcJrz1eONi3rPSc/edit?usp=sharing) for more information.
+
+```{r setup}
+library(tidyverse)
+```
+
+# Data Exploration
+<!-- -------------------------------------------------- -->
+
+In this first stage, you will explore the `diamonds` dataset and document your observations.
+
+__q1__ Create a plot of `price` vs `carat` of the `diamonds` dataset below. Document your observations from the visual.
+
+*Hint*: We learned how to do this in `e-vis00-basics`!
+
+```{r q1-task}
+## TASK: Plot `price` vs `carat` below
+## Your code here!
+library(cowplot)
+glimpse(diamonds)
+
+ggplot(diamonds)+
+  geom_point(aes(x=carat, y=price))
+
+mod_diamond_carat1 = diamonds[diamonds$carat <= 1.5 & diamonds$carat >= 1.0, ] 
+carat1 <- mod_diamond_carat1 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat2 = diamonds[diamonds$carat <= 2.0 & diamonds$carat >= 1.5, ] 
+carat2 <- mod_diamond_carat2 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat3 = diamonds[diamonds$carat <= 2.5 & diamonds$carat >= 2.0, ] 
+carat3 <- mod_diamond_carat3 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat4 = diamonds[diamonds$carat <= 3.0 & diamonds$carat >= 2.5, ] 
+carat4 <- mod_diamond_carat4 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+plot_grid(carat1, carat2, carat3, carat4, labels = "AUTO")
+
+
+
+```
+
+**Observations**:
+
+After Angela made a note on how carats are measured, I was interested in exploring the hard lines in the first graph, which seemed anomalous, especially when considering the logarithmic evidenced by the sub <1 carat range.
+I broke down the set based on carat ranges (1-1.5, 1.5-2, 2-2.5, 2.5-3) and then made a histogram plot from those ranges which seems to highlight this phenomena on the data.
+You can see this effect even in the most basic carat v. price graph. I think it is a fair statement to make that the distribution of carats should be purely random, but within the specified ranges there is a clear bias towards “clean” numbers, with a logarithmic decay within each of those sets.
+
+
+__q2__ Create a visualization showing variables `carat`, `price`, and `cut` simultaneously. Experiment with which variable you assign to which aesthetic (`x`, `y`, etc.) to find an effective visual.
+
+```{r q2-task}
+## TASK: Plot `price`, `carat`, and `cut` below
+## Your code here!
+library(cowplot)
+
+mod_diamond_carat1 = diamonds[diamonds$carat <= 1.5 & diamonds$carat >= 1.0, ] 
+cpc1 <- ggplot(mod_diamond_carat1)+
+  geom_point(aes(x=carat, y=price, color=cut))
+carat1 <- mod_diamond_carat1 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat2 = diamonds[diamonds$carat <= 2.0 & diamonds$carat >= 1.5, ] 
+cpc2 <- ggplot(mod_diamond_carat2)+
+  geom_point(aes(x=carat, y=price, color=cut))
+carat2 <- mod_diamond_carat2 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat3 = diamonds[diamonds$carat <= 2.5 & diamonds$carat >= 2.0, ] 
+cpc3 <- ggplot(mod_diamond_carat3)+
+  geom_point(aes(x=carat, y=price, color=cut))
+carat3 <- mod_diamond_carat3 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat4 = diamonds[diamonds$carat <= 3.0 & diamonds$carat >= 2.5, ] 
+cpc4 <- ggplot(mod_diamond_carat4)+
+  geom_point(aes(x=carat, y=price, color=cut))
+carat4 <- mod_diamond_carat4 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+mod_diamond_carat5 = diamonds[diamonds$carat >= 2.0, ]
+ggplot(mod_diamond_carat5)+
+  geom_point(aes(x=carat, y=price, color=cut))
+mod_diamond_carat5 %>%
+  ggplot(aes(carat)) +
+    geom_bar()
+
+#plot_grid(carat1, carat2, carat3, carat4, labels = "AUTO")
+
+```
+
+**Observations**:
+
+As I was slicing and dicing the data I noticed something interesting at 2.8+ carats. There are very few ideal cuts in this range which is actually somewhat counter-intuitive.
+My hypothesis from this is that at this range the primary purpose is to maximize weight (carats) so therefore reducing the weight to improve the cut is not preferred
+
+
+
+# Communication
+<!-- -------------------------------------------------- -->
+
+In this next stage, you will render your data exploration, push it to GitHub to share with others, and link your observations within our [Data Science Wiki](https://olin-data-science.fandom.com/wiki/Olin_Data_Science_Wiki).
+
+__q3__ *Knit* your document in order to create a report.
+
+You can do this by clicking the "Knit" button at the top of your document in RStudio.
+
+![Terminal](./images/c00-knit.png)
+
+This will create a local `.md` file, and RStudio will automatically open a preview window so you can view your knitted document.
+
+__q4__ *Push* your knitted document to GitHub.
+
+![Terminal](./images/c00-unstaged.png)
+
+You will need to stage both the `.md` file, as well as the `_files` folder. Note that the `_files` folder, when staged, will expand to include all the files under that directory.
+
+![Terminal](./images/c00-staged.png)
+
+__q5__ *Document* your findings in our [Wiki](https://olin-data-science.fandom.com/wiki/Olin_Data_Science_Wiki). Work with your learning team to come to consensus on your findings.
+
+The [Datasets](https://olin-data-science.fandom.com/wiki/Datasets) page contains lists all the datasets we've analyzed together.
+
+__q6__ *Prepare* to present your team's findings!
+
+__q7__ Add a link to your personal data-science repository on the [Repositories](https://olin-data-science.fandom.com/wiki/Repositories) page. Make sure to file it under your team name!
+
