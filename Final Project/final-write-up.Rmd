@@ -1,0 +1,292 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+```{r setup}
+library(tidyverse)
+library(janitor)
+library(rvest)
+library("wesanderson")
+```
+
+```{r Gapminder-import}
+
+
+# Get the Data for Food Consumption and CO2 Emissions
+
+food_consumption <- read.csv('./data/food_consumption.csv')
+
+head(food_consumption)
+
+#Import Gapminder Data here
+mean_years <- read.csv("./data/mean_years_in_school_women_25_years_and_older.csv")
+
+mean_years_tidy <- mean_years %>%
+    gather(key = "Year",
+         value = "Mean_Years",
+         names(mean_years)[2:length(mean_years)]) %>%
+    mutate(
+      Year = parse_number(Year)
+    )
+
+head(mean_years_tidy)
+
+
+female_ag <- read.csv("./data/female_agriculture_workers_percent_of_female_employment.csv")
+
+female_ag_tidy <- female_ag %>%
+    gather(key = "Year",
+         value = "Female_Ag",
+         names(female_ag[2:length(female_ag)])) %>%
+    mutate(
+      Year = parse_number(Year)
+    )
+
+head(female_ag_tidy)
+
+ag_workers <- read.csv("./data/agriculture_workers_percent_of_employment.csv")
+
+ag_workers_tidy <- ag_workers %>%
+    gather(key = "Year",
+         value = "Ag_Workers",
+         names(ag_workers)[2:length(ag_workers)]) %>%
+    mutate(
+      Year = parse_number(Year)
+    )
+
+head(ag_workers_tidy)
+
+
+```
+```{r over_time}
+BRIC_mean_years <- mean_years_tidy %>%
+  filter(country == "China"  | 
+         country == 'India'  | 
+         country == 'Russia' |
+         country == 'Brazil' |
+         country == 'United States') %>%
+  filter(Year >= 1990)
+
+BRIC_mean_years %>%
+  ggplot(aes(x = Year, 
+             y = Mean_Years,
+             color = country)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Years of Education for Women over 25",
+       y="Years Of Education",
+       x="Year")
+
+BRIC_female_ag <- female_ag_tidy %>%
+  filter(country == "China"  | 
+         country == 'India'  | 
+         country == 'Russia' |
+         country == 'Brazil' |
+         country == 'United States')
+
+BRIC_female_ag %>%
+  ggplot(aes(x = Year, 
+             y = Female_Ag,
+             color = country)) +
+  geom_point() +
+  geom_smooth() + 
+  labs(title = "Female Agricultultural Employment as Percentage of Female Employment",
+       y="Percent Employment (%))",
+       x="Year")
+
+BRIC_ag_workers <- ag_workers_tidy %>%
+  filter(country == "China"  | 
+         country == 'India'  | 
+         country == 'Russia' |
+         country == 'Brazil' |
+         country == 'United States') %>%
+  filter(Year >= 1990)
+
+
+BRIC_ag_workers %>%
+  ggplot(aes(x = Year, 
+             y = Ag_Workers,
+             color = country)) +
+  geom_point() +
+  labs(title = "Agricultultural Employment as Percentage of Total Employment",
+       y="Percent Employment (%))",
+       x="Year")
+
+BRIC_ag_workers %>%
+  filter(Year >= 2013)
+
+```
+
+
+```{r initial-plots}
+co2_top <- food_consumption %>%
+  group_by(country) %>%
+  summarize(total_co2 = sum(co2_emmission)) %>%
+  top_n(8)
+
+co2_low <- food_consumption %>%
+  group_by(country) %>%
+  summarize(total_co2 = sum(co2_emmission)) %>%
+  top_n(-9)
+
+co2_total <- food_consumption %>%
+  group_by(country) %>%
+  summarize(total_co2 = sum(co2_emmission)) %>%
+  filter(country == "China"  | 
+         country == 'India'  | 
+         country == 'Russia' |
+         country == 'Brazil' |
+         country == 'USA')
+
+head(co2_total)
+
+co2_top %>%
+  ggplot(aes(x = country, 
+             y = total_co2,
+             color = country)) +
+  geom_point() +
+  geom_text(aes(label = total_co2), position = position_nudge(y = 50)) +
+  labs(title = "Top 8 Highest Total CO2 Emissions",
+       y="CO2 Emissions (kg/co2/person)",
+       x="Country")
+
+co2_low %>%
+  ggplot(aes(x = country, 
+             y = total_co2,
+             color = country)) +
+  geom_point() +
+  geom_text(aes(label = total_co2), position = position_nudge(y = 5)) +
+  labs(title = "Lowest 8 Highest Total CO2 Emissions",
+       y="CO2 Emissions (kg/co2/person)",
+       x="Country")
+
+
+```
+
+
+```{r}
+co2_select <- food_consumption %>%
+  group_by(country) %>%
+  filter(country == "China"  | 
+         country == 'India'  | 
+         country == 'Russia' |
+         country == 'Brazil' |
+         country == 'USA')
+
+head(co2_select)
+
+co2_India <- food_consumption %>%
+  group_by(country) %>%
+  filter(country == "India")
+
+head(co2_India)
+
+co2_select %>%
+  filter(food_category == 'Beef'        |
+         food_category == 'Pork'        |
+         food_category == 'Poultry'     |
+         food_category == 'Fish'        |
+         food_category == 'Lamb & Goat'
+         ) %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_col(aes(fill = fct_reorder(food_category, co2_emmission)), width = 0.7) + 
+  labs(title = "BRIC Country Meat Consumption - 2013",
+     y="CO2 Emissions (kg co2/perso)",
+     x="Country") +
+  labs(fill = "Meat Type") +
+  scale_fill_manual(values=wes_palette(n=5, name="Darjeeling1"))+
+  theme_minimal()
+
+co2_select %>%
+  filter(food_category == 'Pork'        |
+         food_category == 'Poultry'     |
+         food_category == 'Fish'        |
+         food_category == 'Lamb & Goat'
+         ) %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_col(aes(fill = fct_reorder(food_category, co2_emmission)), width = 0.7) + 
+  labs(title = "BRIC Country Meat Consumption (No Beef) - 2013",
+     y="CO2 Emissions (kg co2/person)",
+     x="Country") +
+  labs(fill = "Meat Type") +
+  scale_fill_manual(values=wes_palette(n=5, name="Darjeeling1")) +
+  theme_minimal()
+
+
+
+#***make a bar fill graph that shows total CO2 emissions from meat and associate that with mean years of education for 2013/2014***#
+
+```
+```{r scatchpad}
+co2_select %>%
+  filter(food_category == 'Wheat and Wheat Products') %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_bar(stat="identity", width=0.5) +
+  geom_text(aes(label = co2_emmission), position = position_nudge(y = 5)) +
+  labs(title = "BRIC Country Wheat Consumption",
+     y="CO2 Emissions (kg/co2/person)",
+     x="Country")
+
+co2_select %>%
+  filter(food_category == 'Rice') %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_bar(stat="identity", width=0.5) +
+  geom_text(aes(label = co2_emmission), position = position_nudge(y = 5)) + 
+  labs(title = "BRIC Country Rice Consumption",
+     y="CO2 Emissions (kg/co2/person)",
+     x="Country")
+
+
+
+co2_select %>%
+  filter(food_category == 'Pork') %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_bar(stat="identity", width=0.5) +
+  geom_text(aes(label = co2_emmission), position = position_nudge(y = 5))
+
+co2_select %>%
+  filter(food_category == 'Lamb & Goat') %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_bar(stat="identity", width=0.5) +
+  geom_text(aes(label = co2_emmission), position = position_nudge(y = 5))
+
+co2_select %>%
+  filter(food_category == 'Poultry') %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_bar(stat="identity", width=0.5) +
+  geom_text(aes(label = co2_emmission), position = position_nudge(y = 5))
+
+
+co2_select %>%
+  filter(food_category == 'Fish') %>%
+  ggplot(aes(x = country, 
+             y = co2_emmission,
+             )) +
+  geom_bar(stat="identity", width=0.5) +
+  geom_text(aes(label = co2_emmission), position = position_nudge(y = 2))
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
